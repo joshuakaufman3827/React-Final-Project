@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 
 export default function ProjectCard({ project }) {
   const [flipped, setFlipped] = useState(false);
 
   return (
-    <div
+    <div 
       className={`card ${flipped ? "flipped" : ""}`}
       onClick={() => setFlipped(!flipped)}
     >
@@ -13,33 +12,36 @@ export default function ProjectCard({ project }) {
 
         {/* FRONT */}
         <div className="card-front">
-          <img src={project.img} alt={project.title} />
-
+          <img 
+            src={project.img} 
+            alt="" 
+          />
           <div className="card-content">
             <h3>{project.title}</h3>
             <p>{project.description}</p>
-            <p className="view-details-text">View Details</p>
-
+            <small>{project.date}</small>
           </div>
         </div>
 
         {/* BACK */}
         <div className="card-back">
           <div className="back-content">
-
-            <h3>More Images</h3>
+            <h3>{project.title}</h3>
 
             <div className="back-images">
-              {project.images.map((url, index) => (
-                <img key={index} src={url} className="back-image" />
+              {project.images.map((img, index) => (
+                <img 
+                  key={index}
+                  src={img}
+                  alt=""
+                  className="back-image"
+                />
               ))}
             </div>
 
-            {/* BACK PARAGRAPH AREA */}
             <div className="back-description">
               {project.backText}
             </div>
-
           </div>
         </div>
 
@@ -47,5 +49,6 @@ export default function ProjectCard({ project }) {
     </div>
   );
 }
+
 
 
