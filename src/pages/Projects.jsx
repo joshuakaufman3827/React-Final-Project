@@ -1,56 +1,78 @@
-import { useState } from "react";
-import { projects } from "../data/projects";
+import { useState, useEffect } from "react";
 import ProjectCard from "../components/ProjectCard";
 
+const API_KEY = "b238d75b";
+
 export default function Projects() {
-  const [sortType, setSortType] = useState("az");
+  const [projects, setProjects] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const filteredProjects = projects.filter((p) =>
-    p.title.toLowerCase().includes(search.toLowerCase())
-  );
+  // Initial load
+  useEffect(() => {
+    setLoading(true);
+    fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=batman`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.Search) {
+          setProjects(data.Search);
+        } else {
+          setProjects([]);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  const sortedProjects = [...filteredProjects].sort((a, b) => {
-    if (sortType === "az") return a.title.localeCompare(b.title);
-    if (sortType === "za") return b.title.localeCompare(a.title);
-    if (sortType === "newest") return new Date(b.date) - new Date(a.date);
-    if (sortType === "oldest") return new Date(a.date) - new Date(b.date);
-    return 0;
-  });
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearch(query);
+
+    if (query.length < 3) {
+      return;
+    }
+
+    setLoading(true);
+    fetch(
+      `https://www.omdbapi.com/?apikey=${API_KEY}&s=${encodeURIComponent(
+        query
+      )}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.Search) {
+          setProjects(data.Search);
+        } else {
+          setProjects([]);
+        }
+      })
+      .finally(() => setLoading(false));
+  };
 
   return (
-    <section className="projects-page">
-
-      {/* SEARCH BAR */}
+    <div>
       <input
-        className="search-bar"
         type="text"
-        placeholder="Search projects..."
+        className="search-bar"
+        placeholder="Search movies (min 3 characters)..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={handleSearch}
       />
 
-      {/* SORT CONTROLS */}
-      <div className="controls">
-        <label>Sort by:</label>
-        <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
-          <option value="az">A → Z</option>
-          <option value="za">Z → A</option>
-          <option value="newest">Newest → Oldest</option>
-          <option value="oldest">Oldest → Newest</option>
-        </select>
-      </div>
+      {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
 
-      {/* PROJECT GRID */}
+      {!loading && projects.length === 0 && (
+        <p style={{ textAlign: "center" }}>No results found.</p>
+      )}
+
       <div className="items">
-        {sortedProjects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
+        {projects.map((project) => (
+          <ProjectCard key={project.imdbID} project={project} />
         ))}
       </div>
-
-    </section>
+    </div>
   );
 }
+
 
 
 

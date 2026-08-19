@@ -1,54 +1,58 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function ProjectCard({ project }) {
   const [flipped, setFlipped] = useState(false);
 
+  const handleCardClick = () => {
+    setFlipped(!flipped);
+  };
+
   return (
-    <div 
+    <div
       className={`card ${flipped ? "flipped" : ""}`}
-      onClick={() => setFlipped(!flipped)}
+      onClick={handleCardClick}
     >
       <div className="card-inner">
-
         {/* FRONT */}
         <div className="card-front">
-          <img 
-            src={project.img} 
-            alt="" 
+          <img
+            src={project.Poster !== "N/A" ? project.Poster : ""}
+            alt=""
           />
           <div className="card-content">
-            <h3>{project.title}</h3>
-            <p>{project.description}</p>
-            <small>{project.date}</small>
+            <h3>{project.Title}</h3>
+            <p>{project.Year}</p>
+            <small>{project.Type?.toUpperCase()}</small>
+
+            <Link
+              to={`/details/${project.imdbID}`}
+              className="view-details-text"
+              onClick={(e) => e.stopPropagation()}
+            >
+              View Details
+            </Link>
           </div>
         </div>
 
         {/* BACK */}
         <div className="card-back">
           <div className="back-content">
-            <h3>{project.title}</h3>
-
-            <div className="back-images">
-              {project.images.map((img, index) => (
-                <img 
-                  key={index}
-                  src={img}
-                  alt=""
-                  className="back-image"
-                />
-              ))}
-            </div>
-
+            <h3>{project.Title}</h3>
             <div className="back-description">
-              {project.backText}
+              <p>IMDB ID: {project.imdbID}</p>
+              <p>Year: {project.Year}</p>
+              <p>Type: {project.Type}</p>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
 }
+
+
+
 
 
 
